@@ -7,7 +7,9 @@ authors = [
     { name = "Matheos touma", email = "matheos.touma@net.usj.edu.lb" }
 ]
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "pillow>=10.0.0",
+]
 
 [project.scripts]
 lab = "lab:main"
