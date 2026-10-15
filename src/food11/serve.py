@@ -22,8 +22,7 @@ mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
 
 # Load the champion model once when the API starts
-model = mlflow.pyfunc.load_model("models:/food11@champion")
-
+model = mlflow.pyfunc.load_model("models:/food11/Staging")
 
 # Same preprocessing used during training
 transform = transforms.Compose(
@@ -65,7 +64,7 @@ def health():
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
 
-    image = Image.open(io.BytesIO(contents)).convert("RGB")
+    image = Image.open(io.BytesIO(contents)).convert("RGB").resize((128, 128))
 
     image_tensor = transform(image).unsqueeze(0)
 
