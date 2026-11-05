@@ -19,6 +19,4 @@ def test_resize_image_shape_and_mode():
 
 def test_eleven_classes():
     assert len(CLASSES) == 11
-    
-def test_branch_protection():
-    assert 1 == 2
+
