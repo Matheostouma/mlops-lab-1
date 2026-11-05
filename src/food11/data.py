@@ -30,18 +30,26 @@ CATEGORIES = {
     9: "Soup",
     10: "Vegetable-Fruit",
 }
+CLASSES = list(CATEGORIES.values())
 
+
+def category_from_filename(filename: str) -> str:
+    class_idx = int(Path(filename).stem.split("_")[0])
+    return CATEGORIES[class_idx]
+
+
+def resize_image(img: Image.Image, size: int = 128) -> Image.Image:
+    return img.convert("RGB").resize((size, size))
 
 def process_split(split_dir: Path) -> None:
     split = split_dir.name
     mini_counts = {category: 0 for category in CATEGORIES.values()}
 
     for image_path in sorted(split_dir.iterdir()):
-        class_idx = int(image_path.stem.split("_")[0])
-        category = CATEGORIES[class_idx]
+        category = category_from_filename(image_path.name)
 
         with Image.open(image_path) as img:
-            resized = img.convert("RGB").resize(IMAGE_SIZE)
+            resized = resize_image(img)
 
             out_dir = PROCESSED_DIR / split / category
             out_dir.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,20 @@
-/data
+# Datasets
+/data/
+
+# Python environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# MLflow
 mlflow.db
 mlruns/
-mlflow.db
-mlruns/
+
+# Testing caches
+.pytest_cache/
+.ruff_cache/
+
+# Environment variables
+.env

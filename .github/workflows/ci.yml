@@ -1,0 +1,65 @@
+
+name: Food11 CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint and Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run Ruff
+        run: uv run ruff check src/food11 tests
+
+      - name: Run pytest
+        run: uv run pytest -q
+
+  smoke:
+    name: Docker Smoke Test
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t food11-api:test .
+
+      - name: Start API without MLflow
+        run: |
+          docker run -d --name food11-smoke \
+            -e SKIP_MODEL=1 \
+            -p 8000:8000 \
+            food11-api:test
+
+      - name: Check API health
+        run: |
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://localhost:8000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs food11-smoke
+          exit 1
